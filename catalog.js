@@ -16,6 +16,47 @@
     {id: 'achievement', name: 'Достижения', symbol: '★', color: '#fbe397'},
   ];
 
+  const markerTypes = [
+    ['golden-scapegoat', 'Золотое руно отпущения', '♈', '#f6cf78', [679], 'руно золотой череп'],
+    ['dream-ticker', 'Ходики Мира грёз', '◷', '#a6bfff', [452, 668]],
+    ['lordly-trashcan', 'Королевские баки', '▥', '#e1b084', [461, 663]],
+    ['spirithief', 'Душекрады', '♟', '#e8a2de', [664], 'воровской дух Бартолос'],
+    ['zagrey-hand', 'Рука Загрея', '✋︎', '#b6a6ff', [683, 684], 'Загрей панель управления'],
+    ['shiftmation', 'Двухмерный поворот', '↻', '#91d9b9', [686], 'происхождение плавающего жира'],
+    ['magflow-link', 'Магнитореологические головоломки', 'ϟ', '#9ed2ff', [54]],
+    ['interplanar-jump', 'Двухмерный прыжок', '↥', '#83ddff', [836]],
+    ['hanu-adventure', 'Приключения Хану', '⚑', '#dfb39a', [450]],
+    ['dream-room', 'Трёхмерные комнаты снов', '◫', '#c7afff', [463], 'сновидец'],
+    ['time-space-room', 'Помещения со сменой времени', '◩', '#aebdff', [680], 'рассвет вечная ночь'],
+    ['grease-chronicles', 'Записки о плавающем жире', '▧', '#9be2c5', [842]],
+    ['furbobo', 'Сокровища Фурбобо', '♣', '#f8b3a4', [837], 'шерстяные товары'],
+    ['origami-bird', 'Птицы-оригами', '➤', '#f5a0bc', [447]],
+    ['creation-nymph', 'Нимфы созидания', '✿', '#d4e697', [673], 'бабочки жуки'],
+    ['nameless-wispae', 'Безымянные эфемеры', '▦', '#f2afe1', [839], 'квадратики'],
+    ['star-rabbit', 'Кролики звёздного пути', '♧', '#b6e3fa', [838]],
+    ['memory-bubble', 'Пузыри памяти', '◎', '#b9b4fa', [306]],
+    ['starhunt-graffiti', 'Граффити Звёздной охоты', '✎', '#e3a7f2', [340]],
+    ['museum-exhibit', 'Экспонаты музея', '▨', '#d2c6a2', [341]],
+    ['aideen-token', 'Лимитированные жетоны Айдена', '⊙', '#f2d389', [449]],
+  ];
+
+  const seafeldJumpGuide = 'https://www.icy-veins.com/honkai-star-rail/seafeld-city-treasure-chests';
+  const dreamTickerGuides = new Map([
+    [141, 'https://www.hoyolab.com/article/25189499'],
+    [142, 'https://www.hoyolab.com/article/25189596'],
+    [200, 'https://www.hoyolab.com/article/26572659'],
+    [212, parkGuide],
+    [227, 'https://www.hoyolab.com/article/28531442'],
+    [228, 'https://www.hoyolab.com/article/28531442'],
+    [276, 'https://www.hoyolab.com/article/28342500'],
+  ]);
+
+  const typeByLabel = new Map();
+  for (const [id, name, symbol, color, labels, aliases] of markerTypes) {
+    groups.push({id, name, symbol, color, aliases});
+    for (const label of labels) typeByLabel.set(label, id);
+  }
+
   const supplements = [
       {
         id: 212,
@@ -87,6 +128,13 @@
   cityRegion.secondarySource = 'https://star-rail-map.appsample.com/?map=starfall_tower';
   for (const point of cityRegion.points) {
     if ([686, 842].includes(point.label)) point.guide = {url: cityGuide, label: 'Видео прохождения на HoYoLAB'};
+    if (point.label === 836) {
+      point.guide = {
+        url: seafeldJumpGuide, label: 'Прохождения прыжков в Городе Морском ↗', coverage: 'region',
+        video: 'https://www.youtube.com/watch?v=apfpAi6uFZE',
+        videoLabel: 'Видео с таймкодами сундуков ↗',
+      };
+    }
   }
   for (const supplement of supplements) {
     const region = window.STARMAP_WORLD.find(region => region.id === supplement.id);
@@ -95,6 +143,20 @@
       const existing = region.points.find(item => item.id === point.id);
       if (existing) Object.assign(existing, {guide: point.guide, name: point.name});
       else region.points.push(point);
+    }
+  }
+
+  for (const region of window.STARMAP_WORLD) {
+    for (const point of region.points) {
+      point.group = typeByLabel.get(point.label) || point.group;
+      if (point.id === 'hanu-f2') point.group = 'hanu-adventure';
+      if (point.id === 'pearl-studio-jump-ii') point.group = 'interplanar-jump';
+      if (point.group === 'golden-scapegoat') {
+        point.guide = window.STARMAP_RUNE_GUIDES.getGuide(point, region);
+      }
+      if (point.group === 'dream-ticker' && dreamTickerGuides.has(region.id) && !point.guide) {
+        point.guide = {url: dreamTickerGuides.get(region.id), label: 'Решения ходиков в локации ↗', coverage: 'region'};
+      }
     }
   }
 

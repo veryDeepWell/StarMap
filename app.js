@@ -194,14 +194,14 @@
     for (const {point, group, pin, item, button, index} of entries) {
       const isFound = found.has(point.id);
       const matches = activeGroups.has(group.id) && (!hideFound || !isFound) &&
-        (point.name + ' ' + group.name).toLocaleLowerCase('ru').replaceAll('ё', 'е').includes(query);
+        [point.name, group.name, group.aliases, point.guide?.landmark].join(' ').toLocaleLowerCase('ru').replaceAll('ё', 'е').includes(query);
       const isSelected = selected?.id === point.id;
       if (matches) visible++;
       item.hidden = !matches;
       if (pin) {
         pin.hidden = !matches;
         pin.classList.toggle('found', isFound);
-        pin.textContent = isFound ? '✓' : group.symbol;
+        pin.textContent = group.symbol;
         pin.setAttribute('aria-pressed', String(isSelected));
       }
       button.setAttribute('aria-current', String(isSelected));
@@ -266,15 +266,44 @@
         $('floor').focus();
       });
     }
+    if (point.guide?.landmark) add('p', point.guide.landmark);
     if (point.guide?.requirement) add('p', point.guide.requirement);
+    if (point.guide?.moves) {
+      add('h3', 'Ходы с начала испытания');
+      const moves = add('ol', '');
+      moves.className = 'puzzle-moves';
+      const directions = {L: ['←', 'Влево'], R: ['→', 'Вправо'], U: ['↑', 'Вверх'], D: ['↓', 'Вниз']};
+      for (const [index, move] of Array.from(point.guide.moves).entries()) {
+        const [arrow, description] = directions[move];
+        const item = document.createElement('li');
+        item.title = (index + 1) + '. ' + description;
+        const glyph = document.createElement('span');
+        glyph.textContent = arrow;
+        glyph.setAttribute('aria-label', description);
+        const number = document.createElement('small');
+        number.textContent = index + 1;
+        number.setAttribute('aria-hidden', 'true');
+        item.append(number, glyph);
+        moves.append(item);
+      }
+    }
     if (point.guide?.steps?.length) {
-      add('h3', 'Как получить');
+      add('h3', point.guide.moves ? 'Что делать дальше' : 'Как получить');
       const steps = add('ol', '');
       for (const instruction of point.guide.steps) {
         const step = document.createElement('li');
         step.textContent = instruction;
         steps.append(step);
       }
+    }
+    if (point.guide?.video) {
+      const video = add('a', point.guide.videoLabel || 'Видео решения ↗');
+      video.href = point.guide.video;
+      video.target = '_blank';
+      video.rel = 'noopener noreferrer';
+    }
+    if (point.guide?.coverage === 'region') {
+      add('p', 'Это гайд по локации. Сверь этаж и положение загадки в гайде.');
     }
     const parent = region.points.get(point.parent);
     const children = Array.from(region.points.values()).filter(child => child.parent === point.id);

@@ -197,3 +197,10 @@ select { width: 100%; padding: 7px 8px; border-radius: 4px; margin: 4px 0 8px; f
 
 .point-item small { display: block; margin-top: 3px; color: var(--muted); }
 #account-dialog { max-height: 80dvh; }
+
+#detail-content .puzzle-moves { display: flex; flex-wrap: wrap; gap: 5px; padding: 0; margin: 6px 0 12px; list-style: none; }
+#detail-content .puzzle-moves li { display: grid; justify-items: center; gap: 2px; min-width: 30px; padding: 2px 5px 5px; margin: 0; border: 1px solid var(--line); border-radius: 4px; }
+.puzzle-moves small { color: var(--muted); font-variant-numeric: tabular-nums; }
+.puzzle-moves li span { font-size: 18px; line-height: 1; color: #f6cf78; }
+
+.pin.found::after { content: '✓'; position: absolute; top: -5px; right: -5px; color: #101c21; background: var(--pin); border-radius: 50%; padding: 1px 2px; font-size: 9px; font-weight: bold; }
