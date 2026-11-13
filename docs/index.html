@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Интерактивная карта Honkai: Star Rail с этажами и прогрессом исследования.">
+  <title>StarMap — интерактивная карта Honkai: Star Rail</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="map-data.js"></script>
+  <script defer src="world-data.js"></script>
+  <script defer src="source-audit.js"></script>
+  <script defer src="catalog.js"></script>
+  <script defer src="model.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✦</span>StarMap <span class="beta">Бета</span></div>
+    <div class="game-name">Honkai: Star Rail</div>
+    <button id="account" class="account-button" type="button">Прогресс аккаунта</button>
+    <a class="source" data-source target="_blank" rel="noopener noreferrer">Источник HoYoLAB <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main class="workspace">
+    <aside class="sidebar" aria-label="Фильтры и список меток">
+      <div class="side-head">
+        <p id="world" class="eyebrow"></p>
+        <h1 id="location"></h1>
+        <label for="world-picker">Мир</label>
+        <select id="world-picker"></select>
+        <label for="region">Локация</label>
+        <select id="region"></select>
+        <label for="floor">Этаж</label>
+        <select id="floor"></select>
+        <p id="coverage" class="coverage">Метки HoYoLAB и дополнения · <a id="comparison-map" target="_blank" rel="noopener noreferrer">AppSample ↗</a></p>
+        <p id="source-note" class="coverage" hidden></p>
+        <div class="progress-row">
+          <label for="progress">Находки на всех этажах</label>
+          <span id="progress-text"></span>
+        </div>
+        <progress id="progress" value="0"></progress><p id="region-jade" class="jade" aria-live="polite"></p>
+      </div>
+
+      <section class="filters" aria-labelledby="filter-title">
+        <div class="section-head"><h2 id="filter-title">Категории</h2><button id="toggle-filters" class="text-button" type="button">Скрыть все</button></div>
+        <div id="categories"></div>
+        <label class="hide-found"><input type="checkbox" id="all-floors"> Искать на всех этажах</label>
+        <label class="hide-found"><input type="checkbox" id="hide-found"> Скрывать отмеченные</label>
+      </section>
+
+      <section class="results" aria-labelledby="result-title">
+        <div class="section-head"><h2 id="result-title">Метки</h2><span id="visible-count" aria-live="polite"></span></div>
+        <input id="search" type="search" placeholder="Найти метку…" aria-label="Найти метку">
+        <ul id="point-list"></ul>
+        <p id="empty" hidden>Нет меток по выбранным фильтрам.</p>
+      </section>
+    </aside>
+
+    <section class="map" id="map" aria-label="Интерактивная карта" tabindex="0">
+      <div class="map-caption"><span class="status-dot"></span><span id="map-caption"></span></div>
+      <img id="plan" alt="" draggable="false"><p id="no-plan" class="no-plan" hidden>План этого этажа ещё не добавлен. Карточки доступны в списке.</p>
+      <div id="markers"></div>
+      <div class="map-tools" aria-label="Управление картой">
+        <button id="zoom-in" type="button" title="Приблизить" aria-label="Приблизить">+</button>
+        <button id="zoom-out" type="button" title="Отдалить" aria-label="Отдалить">−</button>
+        <button id="fit" type="button" title="Показать всю локацию" aria-label="Показать всю локацию">⌖</button>
+      </div>
+      <div class="map-foot"><span>Колесо · масштаб</span><span>Перетаскивание · перемещение</span></div>
+      <article id="detail" class="detail" aria-labelledby="detail-name" hidden>
+        <button id="close-detail" type="button" title="Закрыть" aria-label="Закрыть метку">×</button>
+        <p id="detail-group" class="eyebrow"></p>
+        <h2 id="detail-name"></h2>
+        <p id="detail-number"></p><div id="detail-content"></div>
+        <div class="detail-actions">
+          <button id="mark" type="button"></button>
+          <a id="detail-source" target="_blank" rel="noopener noreferrer">На HoYoLAB ↗</a>
+        </div>
+      </article>
+    </section>
+  </main>
+  <dialog id="account-dialog" aria-labelledby="account-title">
+    <form method="dialog"><button class="dialog-close" aria-label="Закрыть">×</button></form>
+    <h2 id="account-title">Прогресс аккаунта</h2>
+    <p class="coverage">По отмеченным находкам каталога. Сумма охватывает известные награды исследования.</p>
+    <p id="account-jade" class="jade"></p>
+    <div id="account-regions"></div>
+  </dialog>
+</body>
+</html>
